@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import ReactQuill, { Quill } from "react-quill";
 import "react-quill/dist/quill.snow.css";
 import ImageResize from "quill-image-resize-module-react";
@@ -25,7 +25,7 @@ const toolbarOptions = [
   [{ list: "ordered" }, { list: "bullet" }],
   [{ color: [] }, { background: [] }],
   [{ align: [] }],
-  ["link", "image", "video"],
+  ["link", "image", "video", "custom"],
 ];
 
 // 옵션에 상응하는 포맷, 추가해주지 않으면 text editor에 적용된 스타일을 볼수 없음
@@ -50,9 +50,25 @@ export const formats = [
   "width",
 ];
 
+const CustomHeart = () => <span>♥</span>;
+
+function insertHeart() {
+  const cursorPosition = this.quill.getSelection().index;
+  this.quill.insertText(cursorPosition, "♥");
+  this.quill.setSelection(cursorPosition + 1);
+}
+
 const modules = {
   toolbar: {
     container: toolbarOptions,
+    handlers: {
+      custom: function () {
+        alert("DAGUR");
+      },
+    },
+    // handlers: {
+    //   insertHeart: insertHeart,
+    // },
   },
   // imageResize: {
   //   // https://www.npmjs.com/package/quill-image-resize-module-react 참고
@@ -61,7 +77,8 @@ const modules = {
   // },
 };
 
-const Editor = ({ placeholder, value, ...rest }) => {
+const Editor = ({ placeholder, ...rest }) => {
+  const [value, setValue] = useState("");
   // quill 에디터 컴포넌트 ref
   const quillRef = useRef(null);
 
@@ -75,6 +92,42 @@ const Editor = ({ placeholder, value, ...rest }) => {
   //   },
   // };
 
+  const test = () => {
+    const { getEditor } = quillRef.current;
+    // const file = input.files[0];
+
+    // 현재 커서 위치 저장
+    const range = getEditor().getSelection(true);
+
+    // 서버에 올려질때까지 표시할 로딩 placeholder 삽입
+    getEditor().insertEmbed(range.index, "image", `/images/loading.gif`);
+
+    try {
+      // 필자는 파이어 스토어에 저장하기 때문에 이런식으로 유틸함수를 따로 만들어줬다
+      // 이런식으로 서버에 업로드 한뒤 이미지 태그에 삽입할 url을 반환받도록 구현하면 된다
+      const filePath = `contents/temp/${Date.now()}`;
+      //   const url = await uploadImage(file, filePath);
+      const url = "https://picsum.photos/200/300";
+
+      // 정상적으로 업로드 됐다면 로딩 placeholder 삭제
+      getEditor().deleteText(range.index, 1);
+      // 받아온 url을 이미지 태그에 삽입
+      getEditor().insertEmbed(range.index, "image", url);
+
+      // 사용자 편의를 위해 커서 이미지 오른쪽으로 이동
+      getEditor().setSelection(range.index + 1);
+    } catch (e) {
+      window.ReactNativeWebView.postMessage(
+        JSON.stringify({ type: e, msg: "이미지 업로드 오류" })
+      );
+      // getEditor().deleteText(range.index, 1);
+    }
+  };
+
+  const handleChange = (e) => {
+    // alert(JSON.stringify({ e }));
+    console.log("변화 확인:", e);
+  };
   useEffect(() => {
     // window.ReactNativeWebView.postMessage(JSON.stringify({ msg: "useEffect" }));
     const handleImage = () => {
@@ -86,42 +139,42 @@ const Editor = ({ placeholder, value, ...rest }) => {
       input.setAttribute("type", "file");
       input.setAttribute("accept", "image/*");
       input.click();
-      window.ReactNativeWebView.postMessage(
-        JSON.stringify({ msg: "onChange 실행 확인" })
-      );
-      const file = input.files[0];
+      // window.ReactNativeWebView.postMessage(
+      //   JSON.stringify({ msg: "onChange 실행 확인" })
+      // );
+      // const file = input.files[0];
 
-      // 현재 커서 위치 저장
-      const range = getEditor().getSelection(true);
+      // // 현재 커서 위치 저장
+      // const range = getEditor().getSelection(true);
 
-      // 서버에 올려질때까지 표시할 로딩 placeholder 삽입
-      getEditor().insertEmbed(range.index, "image", `/images/loading.gif`);
+      // // 서버에 올려질때까지 표시할 로딩 placeholder 삽입
+      // getEditor().insertEmbed(range.index, "image", `/images/loading.gif`);
 
-      try {
-        // 필자는 파이어 스토어에 저장하기 때문에 이런식으로 유틸함수를 따로 만들어줬다
-        // 이런식으로 서버에 업로드 한뒤 이미지 태그에 삽입할 url을 반환받도록 구현하면 된다
-        const filePath = `contents/temp/${Date.now()}`;
-        //   const url = await uploadImage(file, filePath);
-        const url = "https://picsum.photos/200/300";
+      // try {
+      //   // 필자는 파이어 스토어에 저장하기 때문에 이런식으로 유틸함수를 따로 만들어줬다
+      //   // 이런식으로 서버에 업로드 한뒤 이미지 태그에 삽입할 url을 반환받도록 구현하면 된다
+      //   const filePath = `contents/temp/${Date.now()}`;
+      //   //   const url = await uploadImage(file, filePath);
+      //   const url = "https://picsum.photos/200/300";
 
-        // 정상적으로 업로드 됐다면 로딩 placeholder 삭제
-        getEditor().deleteText(range.index, 1);
-        // 받아온 url을 이미지 태그에 삽입
-        getEditor().insertEmbed(range.index, "image", url);
+      //   // 정상적으로 업로드 됐다면 로딩 placeholder 삭제
+      //   getEditor().deleteText(range.index, 1);
+      //   // 받아온 url을 이미지 태그에 삽입
+      //   getEditor().insertEmbed(range.index, "image", url);
 
-        // 사용자 편의를 위해 커서 이미지 오른쪽으로 이동
-        getEditor().setSelection(range.index + 1);
-      } catch (e) {
-        window.ReactNativeWebView.postMessage(
-          JSON.stringify({ type: e, msg: "이미지 업로드 오류" })
-        );
-        // getEditor().deleteText(range.index, 1);
-      }
+      //   // 사용자 편의를 위해 커서 이미지 오른쪽으로 이동
+      //   getEditor().setSelection(range.index + 1);
+      // } catch (e) {
+      //   window.ReactNativeWebView.postMessage(
+      //     JSON.stringify({ type: e, msg: "이미지 업로드 오류" })
+      //   );
+      //   // getEditor().deleteText(range.index, 1);
+      // }
       input.onchange = async () => {
+        const file = input.files[0];
         window.ReactNativeWebView.postMessage(
           JSON.stringify({ msg: "onChange 실행 확인" })
         );
-        const file = input.files[0];
 
         // 현재 커서 위치 저장
         const range = getEditor().getSelection(true);
@@ -158,6 +211,7 @@ const Editor = ({ placeholder, value, ...rest }) => {
       const { getEditor } = quillRef.current;
       const toolbar = quillRef.current.getEditor().getModule("toolbar");
       toolbar.addHandler("image", handleImage);
+      toolbar.addHandler("custom", test);
     }
   }, []);
 
@@ -166,6 +220,7 @@ const Editor = ({ placeholder, value, ...rest }) => {
       {...rest}
       ref={quillRef}
       value={value || ""}
+      onChange={handleChange}
       theme="snow"
       modules={{
         ...modules,

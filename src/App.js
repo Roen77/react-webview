@@ -22,10 +22,10 @@ function App() {
       <Editor />
       <RNListener />
       <div>
-        <button onClick={requestPermission}>
+        {/* <button onClick={requestPermission}>
           웹페이지에서 rn으로 전달합니다.
-        </button>
-        <p>지도지도지도지도</p>
+        </button> */}
+        {/* <p>지도지도지도지도</p>
         <Map
           center={{ lat: 33.5563, lng: 126.79581 }}
           style={{ width: "100%", height: "360px" }}
@@ -33,7 +33,7 @@ function App() {
           <MapMarker position={{ lat: 33.55635, lng: 126.795841 }}>
             <div style={{ color: "#000" }}>Hello World!</div>
           </MapMarker>
-        </Map>
+        </Map> */}
       </div>
     </>
   );
