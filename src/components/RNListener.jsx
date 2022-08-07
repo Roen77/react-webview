@@ -18,7 +18,7 @@ const RNListener = () => {
     window.addEventListener("message", listener);
   } else {
     // 모바일이 아니라면 모바일 아님을 alert로 띄웁니다.
-    alert("머냐");
+    alert("pc");
   }
 };
 

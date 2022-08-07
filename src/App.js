@@ -3,6 +3,8 @@ import "./App.css";
 import Editor from "./components/Editor";
 import RNListener from "./components/RNListener";
 import { Map, MapMarker } from "react-kakao-maps-sdk";
+import Kakao from "./components/Kakao";
+import NaverLogin from "./components/Naver";
 
 function App() {
   const requestPermission = () => {
@@ -19,8 +21,9 @@ function App() {
 
   return (
     <>
-      <Editor />
+      {/* <Editor /> */}
       <RNListener />
+
       <div>
         {/* <button onClick={requestPermission}>
           웹페이지에서 rn으로 전달합니다.
@@ -35,6 +38,8 @@ function App() {
           </MapMarker>
         </Map> */}
       </div>
+      <Kakao />
+      <NaverLogin />
     </>
   );
 }
