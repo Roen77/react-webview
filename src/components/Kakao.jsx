@@ -3,7 +3,7 @@ import React, { Component } from "react";
 class Kakao extends Component {
   componentDidMount() {
     // @ts-ignore
-    window.Kakao.init(process.env.KAKAOKEY);
+    window.Kakao.init(process.env.REACT_APP_KAKAOKEY);
     // @ts-ignore
     window.Kakao.Link.createDefaultButton({
       container: "#kakao-link-btn",

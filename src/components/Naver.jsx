@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 const NaverLogin = ({ setGetToken, setUserInfo }) => {
   const [token, setToken] = useState("");
   const { naver } = window;
-  const NAVER_CLIENT_ID = process.env.NAVERC;
-  const NAVER_SECRET = process.env.NAVERS;
+  const NAVER_CLIENT_ID = process.env.REACT_APP_NAVERC;
+  const NAVER_SECRET = process.env.REACT_APP_NAVERS;
   const NAVER_CALLBACK_URL = "https://joyful-valkyrie-bc3157.netlify.app";
 
   const initializeNaverLogin = () => {
